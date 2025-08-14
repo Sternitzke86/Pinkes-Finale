@@ -1,16 +1,16 @@
 /*
-  Großformatiges, kontrastreiches Design in leuchtendem Gelb. Das Layout
+  Großformatiges, kontrastreiches Design in leuchtendem Pink. Das Layout
   orientiert sich an dem vom Nutzer bereitgestellten Foto: ein farbiges
   Display mit schwarzem Rand und sehr großer Schrift. Für das Layout
   verwenden wir CSS‑Variablen, sodass die Farbe leicht geändert werden kann.
 */
 
 :root {
-  --bg-color: #ff00ff; /* helles, knalliges Gelb */
+  --bg-color: #ff69b4; /* leuchtendes Pink */
   --text-color: #000; /* Schwarz für optimale Lesbarkeit */
   /* Farbe des Overlays beim Vergrößern von Bildern: leicht transparente
      Variante des Hintergrunds */
-  --modal-overlay-bg: rgba(255, 255, 59, 0.9);
+  --modal-overlay-bg: rgba(255, 105, 180, 0.9);
 }
 
 body {
@@ -266,7 +266,7 @@ footer {
 .result-modal img {
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
-  border: 20px solid #ffff3b;
+  border: 20px solid #ff69b4;
   box-sizing: border-box;
   border-radius: 0;
 }
@@ -309,7 +309,7 @@ footer {
   Passwortfeld zur Eingabe des OpenAI‑Schlüssels und einen Speichern‑Button.
   Der Hintergrund ist halbtransparent, damit er sich vom restlichen
   Farbschema absetzt, ohne zu stark abzulenken. Die Farben orientieren sich
-  am gewählten Farbschema (Gelb für Hintergrund, Schwarz für Text). */
+  am gewählten Farbschema (Pink für Hintergrund, Schwarz für Text). */
 #apiKeyBar {
   position: fixed;
   bottom: 0;
@@ -367,7 +367,7 @@ footer {
 .generated-image {
     max-width: calc(100vw - 40px);
     max-height: calc(100vh - 40px);
-    border: 20px solid yellow;
+    border: 20px solid #ff69b4;
     box-sizing: border-box;
 }
 
