@@ -6,11 +6,11 @@
 */
 
 :root {
-  --bg-color: #ffff3b; /* helles, knalliges Gelb */
+  --bg-color: #ff2da0; /* knalliges Pink */
   --text-color: #000; /* Schwarz für optimale Lesbarkeit */
   /* Farbe des Overlays beim Vergrößern von Bildern: leicht transparente
-     Variante des Hintergrunds */
-  --modal-overlay-bg: rgba(255, 255, 59, 0.9);
+     Variante des pinken Hintergrunds */
+  --modal-overlay-bg: rgba(255, 45, 160, 0.9);
 }
 
 body {
@@ -266,7 +266,7 @@ footer {
 .result-modal img {
   max-width: calc(100vw - 40px);
   max-height: calc(100vh - 40px);
-  border: 20px solid #ffff3b;
+  border: 20px solid #ff2da0;
   box-sizing: border-box;
   border-radius: 0;
 }
@@ -287,6 +287,8 @@ footer {
 /* Einzelne Nachricht: Ein Abstand nach unten trennt die Nachrichten. */
 .message {
   margin-bottom: 1rem;
+  /* Ermöglicht absolute Positionierung für untergeordnete Elemente wie den Download-Button */
+  position: relative;
 }
 
 /* Prompt‑Text innerhalb einer Nachricht. */
@@ -303,6 +305,7 @@ footer {
   border-radius: 12px;
   cursor: pointer;
 }
+
 
 /*
   Der API‑Key‑Bar wird am unteren Bildschirmrand fixiert. Er enthält ein
@@ -367,7 +370,7 @@ footer {
 .generated-image {
     max-width: calc(100vw - 40px);
     max-height: calc(100vh - 40px);
-    border: 20px solid yellow;
+    border: 20px solid #ff2da0;
     box-sizing: border-box;
 }
 
