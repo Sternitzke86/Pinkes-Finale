@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt‑Battle – Pink</title>
+  <!--
+    Single‑User‑Version der Prompt‑Battle‑Oberfläche.
+    Diese Variante ist für Präsentationen gedacht: Großformatiger Text auf einem
+    knalligen Hintergrund sorgt dafür, dass auch Zuschauerinnen und Zuschauer
+    aus einiger Entfernung mitlesen können. Ein API‑Schlüssel wird lokal im
+    Browser gespeichert. Für den Schriftgrad orientieren wir uns an
+    Webstandards: Ohne Angabe beträgt die Standardschriftgröße 16 px【742899299561717†L765-L790】.
+    Hier erhöhen wir sie deutlich. Die Farbwerte sind in der verlinkten
+    CSS‑Datei hinterlegt.
+  -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="scroll-container">
+  <!--
+    API‑Schlüssel‑Dialog: Beim ersten Start oder über die Tastenkombination
+    Ctrl+K kann der Benutzer hier seinen persönlichen OpenAI‑API‑Schlüssel
+    eingeben. Der Schlüssel wird ausschließlich im lokalen Speicher des
+    Browsers gespeichert. Ohne gültigen Schlüssel können keine Bilder
+    generiert werden.
+  -->
+  <div id="apiKeyModal" class="modal">
+    <div class="modal-content">
+      <h2>OpenAI API‑Schlüssel</h2>
+      <p>
+        Bitte gib deinen persönlichen OpenAI‑API‑Schlüssel ein. Der Schlüssel wird
+        ausschließlich im lokalen Speicher deines Browsers gespeichert, damit du
+        ihn nicht jedes Mal erneut eingeben musst. Ohne gültigen Schlüssel können
+        keine Antworten generiert werden.
+      </p>
+      <input type="password" id="apiKeyInput" placeholder="sk‑..." />
+      <button id="saveApiKey">Speichern</button>
+    </div>
+  </div>
+  <!--
+    Hauptbereich: Das Logo des Digitalen Innovationszentrums wird oben links
+    angezeigt. Direkt darunter beginnt das große Eingabefeld für den Prompt.
+    Der gesamte Container nimmt die volle Höhe des Viewports ein, damit das
+    Textfeld den verfügbaren Platz nach dem Logo ausfüllt.
+  -->
+  <div class="main-container">
+    <div class="logo-bar">
+  <img src="logo.png" alt="Digitales MV Logo" class="logo">
+  <!-- Verwende das korrekte PNG für das SMS‑Logo -->
+  <img src="SMS_black.png" alt="SMS Logo" class="logo">
+</div>
+    <!-- Eingabefeld für den neuen Prompt. Es steht direkt unter dem Logo,
+         sodass es sofort ins Auge fällt. Durch Drücken der Enter‑Taste wird
+         der Inhalt an die API gesendet. -->
+    <textarea id="prompt" class="full-input" autocomplete="off" autofocus></textarea>
+    <!-- Nachrichtenbereich: Hier werden die abgeschickten Prompts sowie die
+         generierten Bilder in chronologischer Reihenfolge angezeigt. -->
+    <div id="messages" class="messages"></div>
+  </div>
+  <!-- Ergebnis‑Overlay für Bilder oder Fehlermeldungen -->
+  <div id="resultModal" class="result-modal">
+    <div class="result-content" id="resultContent"></div>
+  </div>
+
+  <!--
+    Unterer Bereich zur Eingabe des API‑Schlüssels. Dieser Bereich ist stets
+    sichtbar und erlaubt das Speichern eines neuen Schlüssels. Sobald ein
+    Schlüssel vorhanden ist, wird er als Passwortfeld vorausgefüllt. Durch
+    Drücken der Enter‑Taste oder den Speichern‑Button wird der Schlüssel im
+    lokalen Speicher abgelegt.
+  -->
+  <script src="script.js"></script>
+</div>
+</body>
+</html>

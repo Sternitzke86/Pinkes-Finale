@@ -1,0 +1,449 @@
+/*
+  Großformatiges, kontrastreiches Design in leuchtendem Gelb. Das Layout
+  orientiert sich an dem vom Nutzer bereitgestellten Foto: ein farbiges
+  Display mit schwarzem Rand und sehr großer Schrift. Für das Layout
+  verwenden wir CSS‑Variablen, sodass die Farbe leicht geändert werden kann.
+*/
+
+:root {
+  --bg-color: #ff2da0; /* knalliges Pink */
+  --text-color: #000; /* Schwarz für optimale Lesbarkeit */
+  /* Farbe des Overlays beim Vergrößern von Bildern: leicht transparente
+     Variante des pinken Hintergrunds */
+  --modal-overlay-bg: rgba(255, 45, 160, 0.9);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  /* Der gesamte Hintergrund verwendet die definierte Hintergrundfarbe und füllt
+     den kompletten Bildschirm aus. */
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Container für Logo und Eingabefeld. Nutzt die gesamte Höhe des Bildschirms
+   und ordnet die Elemente vertikal an. */
+/*
+  Der Hauptcontainer ordnet Logo, Nachrichtenbereich und Eingabefeld
+  vertikal an. Die Höhe wird durch die Höhe des API‑Key‑Bars reduziert,
+  sodass dieser nicht den Inhalt überlagert. */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 5rem);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+/* Logo oben links. Die Größe ist relativ, damit es auf unterschiedlichen
+   Bildschirmgrößen ansehnlich bleibt. */
+#logo {
+  max-width: 30%;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.title {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 3rem;
+  text-align: center;
+}
+
+/* Untertitel für die zweite Zeile der Überschrift */
+/* Die Unterüberschrift „Kann KI Kunst?" ist doppelt so groß wie der Titel
+   und wird weiß dargestellt. */
+.subtitle {
+  font-size: 6rem;
+  line-height: 1;
+  color: #fff;
+}
+
+/* Der farbige Bereich füllt jetzt die gesamte Breite des Fensters aus. */
+.chat-wrapper {
+  width: 100%;
+  max-width: none;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  border: 12px solid #000;
+  border-radius: 0;
+  background-color: var(--bg-color);
+  box-shadow: none;
+}
+
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  font-size: 2.5rem;
+  line-height: 1.35;
+  color: var(--text-color);
+}
+
+.chat-container .message {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  max-width: 100%;
+}
+
+.chat-container .user {
+  background: rgba(255, 255, 255, 0.4);
+  text-align: left;
+}
+
+.chat-container .ai {
+  background: rgba(0, 0, 0, 0.15);
+  text-align: right;
+}
+
+/* Bilder in AI‑Antworten sollen groß dargestellt werden */
+.chat-container .ai img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: #111;
+}
+
+.input-area input {
+  flex: 1;
+  /* Gleiche Schriftgröße wie der Untertitel „Kann KI Kunst?" */
+  font-size: 6rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  margin-right: 0.5rem;
+}
+
+.input-area input:focus {
+  outline: none;
+}
+
+.input-area button {
+  /* Gleiche Größe wie das Eingabefeld */
+  font-size: 6rem;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  background: #000;
+  color: var(--bg-color);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.input-area button:hover {
+  opacity: 0.8;
+}
+
+footer {
+  margin-top: 1rem;
+  color: #888;
+  font-size: 1rem;
+}
+
+/* Button zum Ändern des API‑Schlüssels */
+.api-key-btn {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  padding: 0.4rem 0.8rem;
+  background: #000;
+  color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.api-key-btn:hover {
+  opacity: 0.8;
+}
+
+/* Modal Styling (reuse from previous design) */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 8px;
+  color: #000;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-content button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #111;
+  color: var(--bg-color);
+  cursor: pointer;
+}
+
+/*
+  Vollbild‑Eingabefeld: Das Textfeld füllt die gesamte Seite aus und wirkt
+  nicht wie ein klassisches Eingabefeld. Es hat keine Rahmen, keine
+  Schatten und nutzt dieselbe Hintergrundfarbe wie der restliche Bildschirm.
+  Der Text ist extrem groß, damit Zuschauerinnen und Zuschauer auch aus
+  größerer Entfernung mitlesen können.
+*/
+.full-input {
+  width: 100%;
+  /* Eingabefeld steht am unteren Rand der Nachrichtenliste und hat eine
+     feste Höhe. Die Schrift ist sehr groß, damit der Text gut lesbar ist. */
+  flex: none;
+  min-height: 9rem;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 5.3rem;
+  line-height: 1.2;
+  background: var(--bg-color);
+  color: var(--text-color);
+  caret-color: var(--text-color);
+  font-family: inherit;
+}
+
+/* Modal für Ergebnisanzeige. Wird nur angezeigt, wenn ein Bild oder eine
+   Fehlermeldung vorliegt. */
+.result-modal {
+  display: none;
+  position: fixed;
+  z-index: 1100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* Nutzt die farbige Overlay‑Variable statt schwarzem Hintergrund */
+  background-color: var(--modal-overlay-bg);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.result-modal .result-content {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.result-modal img {
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  border: 20px solid #ff2da0;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+/* Nachrichtenliste: Dieser Bereich sammelt alle abgeschickten Prompts und
+   die dazugehörigen generierten Bilder. Er wächst dynamisch und ist
+   scrollbar, falls der Inhalt den verfügbaren Platz übersteigt. */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  font-size: 4rem;
+  line-height: 1.3;
+  color: var(--text-color);
+}
+
+/* Einzelne Nachricht: Ein Abstand nach unten trennt die Nachrichten. */
+.message {
+  margin-bottom: 1rem;
+  /* Ermöglicht absolute Positionierung für untergeordnete Elemente wie den Download-Button */
+  position: relative;
+}
+
+/* Prompt‑Text innerhalb einer Nachricht. */
+.message .prompt-text {
+  margin: 0 0 0.5rem 0;
+  white-space: pre-wrap;
+}
+
+/* Bilder innerhalb der Nachrichten: nehmen die verfügbare Breite ein und
+   besitzen abgerundete Ecken. Durch Klick lassen sie sich vergrößern. */
+.message img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* Download-Button: wird oben rechts über dem generierten Bild platziert */
+.download-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0.3rem 0.8rem;
+  font-size: 2.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  z-index: 5;
+}
+.download-btn:hover {
+  opacity: 0.8;
+}
+
+/* Download‑Button unter dem generierten Bild */
+.download-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 3rem;
+  border: none;
+  border-radius: 8px;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.download-btn:hover {
+  opacity: 0.8;
+}
+
+/* Download‑Button unter dem generierten Bild */
+.download-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 3rem;
+  border: none;
+  border-radius: 8px;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.download-btn:hover {
+  opacity: 0.8;
+}
+
+/*
+  Der API‑Key‑Bar wird am unteren Bildschirmrand fixiert. Er enthält ein
+  Passwortfeld zur Eingabe des OpenAI‑Schlüssels und einen Speichern‑Button.
+  Der Hintergrund ist halbtransparent, damit er sich vom restlichen
+  Farbschema absetzt, ohne zu stark abzulenken. Die Farben orientieren sich
+  am gewählten Farbschema (Gelb für Hintergrund, Schwarz für Text). */
+#apiKeyBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--bg-color);
+  z-index: 1200;
+}
+#apiKeyBar input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+#apiKeyBar input:focus {
+  outline: none;
+}
+#apiKeyBar button {
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: #000;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+#apiKeyBar button:hover {
+  opacity: 0.8;
+}
+
+.scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.logo-container .logo {
+    height: 60px;
+}
+
+.generated-image {
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 40px);
+    border: 20px solid #ff2da0;
+    box-sizing: border-box;
+}
+
+/* VERBESSERT: Zwei Logos nebeneinander links oben - beide gleich groß */
+.logo-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 1rem;
+}
+
+.logo-bar .logo {
+  /* Beide Logos haben jetzt die gleiche Höhe - orientiert sich am größeren Logo */
+  height: 120px; /* Erhöht von 80px auf 120px für bessere Sichtbarkeit */
+  width: auto; /* Automatische Breite, um das Seitenverhältnis beizubehalten */
+  /* Zusätzliche Einstellungen für bessere Darstellung */
+  object-fit: contain; /* Stellt sicher, dass das Logo nicht verzerrt wird */
+}
+
+/* Spezielle Behandlung für das SMS-Logo falls es anders skaliert werden muss */
+.logo-bar .logo:last-child {
+  /* Falls das SMS-Logo spezielle Behandlung braucht, kann hier angepasst werden */
+  height: 120px; /* Gleiche Höhe wie das andere Logo */
+}
