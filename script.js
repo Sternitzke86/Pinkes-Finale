@@ -47,15 +47,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultModal = document.getElementById('resultModal');
   const resultContent = document.getElementById('resultContent');
   const messagesContainer = document.getElementById('messages');
+  // Ladebalken: Elementreferenz und robuste Hilfsfunktionen
+  let loadingBarElem = document.getElementById('loadingBar');
+  function ensureLoadingBar() {
+    if (!loadingBarElem) {
+      loadingBarElem = document.createElement('div');
+      loadingBarElem.id = 'loadingBar';
+      loadingBarElem.className = 'loading-bar';
+      loadingBarElem.style.display = 'none';
+      document.body.prepend(loadingBarElem);
+    } else if (loadingBarElem.parentElement && loadingBarElem.parentElement.tagName.toLowerCase() !== 'body') {
+      // Stelle sicher, dass der Ladebalken direkt unterhalb von <body> hängt,
+      // damit position: fixed überall korrekt funktioniert.
+      document.body.prepend(loadingBarElem);
+    }
+    return loadingBarElem;
+  }
+  function showLoadingBar() { const el = ensureLoadingBar(); el.style.display = 'block'; }
+  function hideLoadingBar() { const el = ensureLoadingBar(); el.style.display = 'none'; }
 
-  // Ladebalken: Elementreferenz und Hilfsfunktionen
-  const loadingBarElem = document.getElementById('loadingBar');
-  function showLoadingBar() {
-    if (loadingBarElem) loadingBarElem.style.display = 'block';
-  }
-  function hideLoadingBar() {
-    if (loadingBarElem) loadingBarElem.style.display = 'none';
-  }
 
   // Warnung, wenn die Seite über file:// geladen wurde
   function warnIfFileProtocol() {
@@ -146,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showDownloadConfirmation(filename);
       
     } catch (error) {
+      hideLoadingBar();
       console.error('❌ Download-Fehler:', error);
       
       // Fallback: Öffne Bild in neuem Tab wenn Download fehlschlägt
@@ -244,6 +255,7 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
       
       return optimizedPrompt;
     } catch (error) {
+      hideLoadingBar();
       console.error('GPT-4 optimization error:', error);
       // Fallback mit verbesserter Gesichtsdarstellung
       const hasHumanReference = /person|mensch|gesicht|portrait|face|people|woman|man|frau|mann|kind|child/i.test(userPrompt);
@@ -299,6 +311,7 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
       
       return data;
     } catch (error) {
+      hideLoadingBar();
       console.error('DALL-E 3 generation error:', error);
       throw error;
     }
@@ -320,35 +333,49 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
     promptPara.className = 'prompt-text';
     promptPara.textContent = originalPrompt;
     messageDiv.appendChild(promptPara);
+    showLoadingBar();
     
     // Füge die Nachricht in die Liste ein (ohne Statusanzeige)
     messagesContainer.appendChild(messageDiv);
+    hideLoadingBar();
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     promptInput.value = '';
 
     // Bei direktem file:// Zugriff abbrechen
     if (warnIfFileProtocol()) return;
 
-    // Ladebalken einblenden
-    showLoadingBar();
     try {
       // STUFE 1: GPT-4 optimiert den Prompt (wie ChatGPT)
       const optimizedPrompt = await optimizePromptWithGPT4(originalPrompt);
-
+      
       // STUFE 2: DALL-E 3 generiert das Bild
       const imageData = await generateImageWithOptimizedPrompt(optimizedPrompt, originalPrompt);
-
+      
       const imageUrl = imageData.data && imageData.data[0] && imageData.data[0].url;
-
+      
       if (imageUrl) {
+        // Erstelle das Bild‑Element
         const img = document.createElement('img');
         img.src = imageUrl;
         img.alt = originalPrompt;
         img.classList.add('generated-image');
+        // Klick auf das Bild öffnet es groß im Overlay
         img.addEventListener('click', () => {
           showResult(img.cloneNode(true));
         });
         messageDiv.appendChild(img);
+
+        // Füge einen Download‑Button hinzu (schwarzer Hintergrund, weiße Schrift)
+        const downloadBtn = document.createElement('button');
+        downloadBtn.textContent = 'Bild herunterladen';
+        downloadBtn.className = 'download-btn';
+        downloadBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+          const filename = `prompt-battle-${timestamp}.png`;
+          downloadImage(imageUrl, filename);
+        });
+        messageDiv.appendChild(downloadBtn);
 
         // Zeige das generierte Bild sofort groß
         showResult(img.cloneNode(true));
@@ -364,8 +391,9 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
         messageDiv.appendChild(errorP);
       }
     } catch (error) {
+      hideLoadingBar();
       console.error('Generation error:', error);
-
+      
       const errorP = document.createElement('p');
       if (error.message && error.message.toLowerCase().includes('failed to fetch')) {
         errorP.textContent = 'Fehler: Die Anfrage konnte nicht gesendet werden. Überprüfe deine Internetverbindung oder starte einen lokalen Webserver.';
@@ -374,11 +402,9 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
       }
       errorP.style.color = 'red';
       messageDiv.appendChild(errorP);
-    } finally {
-      // Ladebalken ausblenden
-      hideLoadingBar();
     }
-
+    
+    hideLoadingBar();
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
@@ -422,4 +448,32 @@ Transform this user prompt into an optimized DALL-E 3 prompt:`;
   // Direkt nach Laden: Fokus auf das Promptfeld
   promptInput.focus();
 
+  // Logik für den unteren API‑Key‑Eingabebereich
+  const barInput = document.getElementById('apiKeyBarInput');
+  const barSaveBtn = document.getElementById('saveApiKeyBar');
+  if (apiKey && barInput) {
+    barInput.value = apiKey;
+  }
+  function saveKeyFromBar() {
+    const key = barInput.value.trim();
+    if (key) {
+      localStorage.setItem('openai_api_key', key);
+      apiKey = key;
+      // Synchronisiere auch das Modal
+      if (apiKeyInput) apiKeyInput.value = key;
+    }
+  }
+  if (barSaveBtn) {
+    barSaveBtn.addEventListener('click', () => {
+      saveKeyFromBar();
+    });
+  }
+  if (barInput) {
+    barInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveKeyFromBar();
+      }
+    });
+  }
 });
